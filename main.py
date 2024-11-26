@@ -1,16 +1,22 @@
-# This is a sample Python script.
+import requests
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
+
+BASE_URL = "https://api.themoviedb.org/3"
+
+def get_popular_movies():
+    endpoint = f"{BASE_URL}/movie/popular?language=en-US&page=1"
+    params = {
+        "api_key": API_KEY
+    }
+    response = requests.get(endpoint, params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("ERROR")
+        return None
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+movies = get_popular_movies()
+for movie in movies['results'][:5]:
+    print(movie['title'])
