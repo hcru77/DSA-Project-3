@@ -67,7 +67,9 @@ def get_credits(id):
         print("ERROR")
         return None
 
+
 if __name__ == '__main__':
+
     #Get the user input
     user_inp = input("Pick a random movie: ")
     user_mov = get_user_movie(user_inp)
@@ -78,6 +80,17 @@ if __name__ == '__main__':
 
     # Getting all the credits and their respective characters
     for credit_dets in mov_cast['cast']:
-        print(f"Actor Name: {credit_dets['name']}; Character: {credit_dets['character']}")
+        if "(uncredited)" not in credit_dets['character']:
+            print(f"Actor Name: {credit_dets['name']}; Character: {credit_dets['character']}")
+
+    print()
+
+    # Obtaining the details of the crew and their jobs
+    for crew_dets in mov_cast['crew']:
+        if crew_dets['job'] == "Director" or crew_dets['job'] == "Screenplay":
+            print(f"Name: {crew_dets['name']}; Known For: {crew_dets['known_for_department']}; "
+                  f"Department: {crew_dets['department']}; Job: {crew_dets['job']}")
+
+    # By getting only the director and the screenwriter, we can begin to do search and comparison of movies
 
 
