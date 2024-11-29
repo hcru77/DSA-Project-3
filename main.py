@@ -4,6 +4,16 @@ API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
 
 BASE_URL = "https://api.themoviedb.org/3"
 
+'''
+*
+*
+*
+These are going to be all of the functions necessary to make all of the API calls for the required data
+*
+*
+*
+'''
+
 def get_popular_movies():
     endpoint = f"{BASE_URL}/movie/popular?language=en-US&page=1"
     params = {
@@ -25,14 +35,28 @@ def get_user_movie(name):
     }
     response = requests.get(endpoint, params)
     if response.status_code == 200:
-        j_res = response.json()
-        return find_details(j_res['results'][0]['id'])
+        return response.json()
+        find_details(j_res['results'][0]['id'])
     else:
         print("ERROR")
         return None
 
+# Involved with finding the actual details of the movie
 def find_details(id):
     endpoint = f"{BASE_URL}/movie/{id}?language=en-US"
+    params = {
+        "api_key": API_KEY
+    }
+    response = requests.get(endpoint, params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("ERROR")
+        return None
+
+# Will find credits for a given movie
+def get_credits(id):
+    endpoint = f"{BASE_URL}/movie/{id}/credits?language=en-US"
     params = {
         "api_key": API_KEY
     }
@@ -46,5 +70,14 @@ def find_details(id):
 if __name__ == '__main__':
     #Get the user input
     user_inp = input("Pick a random movie: ")
-    mov_response = get_user_movie(user_inp)
-    print(mov_response)
+    user_mov = get_user_movie(user_inp)
+    mov_id = user_mov['results'][0]['id']
+
+    mov_details = find_details(mov_id)
+    mov_cast = get_credits(mov_id)
+
+    # Getting all the credits and their respective characters
+    for credit_dets in mov_cast['cast']:
+        print(f"Actor Name: {credit_dets['name']}; Character: {credit_dets['character']}")
+
+
