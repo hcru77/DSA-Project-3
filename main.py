@@ -67,6 +67,19 @@ def get_credits(id):
         print("ERROR")
         return None
 
+# Get some more details on a particular cast member
+def search_by_name(name):
+    endpoint = f"{BASE_URL}/search/person?include_adult=false&language=en-US&page=1"
+    params = {
+        "api_key": API_KEY,
+        "query": name
+    }
+    response = requests.get(endpoint, params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("ERROR")
+        return None
 
 if __name__ == '__main__':
 
@@ -92,5 +105,5 @@ if __name__ == '__main__':
                   f"Department: {crew_dets['department']}; Job: {crew_dets['job']}")
 
     # By getting only the director and the screenwriter, we can begin to do search and comparison of movies
-
+    
 
