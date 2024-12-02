@@ -1,14 +1,11 @@
+from castmember import MemberDetails
+
 def hash_key(key):
     new_num = 0
     for i, letter in enumerate(key):
         new_num += ord(letter) * (31**i)
     return new_num
 
-class MemberDetails:
-    def __init__(self, name, movies):
-        # Name is a basic string and the movies is going to be an array of strings
-        self.name = name
-        self.movies = movies
 
 # I read how to create hash map from geeks for geeks article, so the create_buckets, get, and set functions are all
 # inspired by the article: https://www.geeksforgeeks.org/hash-map-in-python/
@@ -22,21 +19,21 @@ class HashTable:
         # We are creating the empty hash map with all the buckets starting as empty arrays
         return [[] for _ in range(self.size)]
 
-    def set_val(self, key, value):
+    def set_val(self, obj):
         # Using the hashing function from before that we learned in class, I will get the hashed index for the key
-        hashed_key = hash_key(key) % self.size
+        hashed_key = hash_key(obj.name) % self.size
 
         # Find the bucket based on the hashed key
         bucket = self.hash_table[hashed_key]
 
         # Loop through the items in the bucket to check if the key is already in bucket
         for i, item in enumerate(bucket):
-            if item.name == key:
+            if item.name == obj.name:
                 # We will replace the value of the key
-                bucket[i].movies = value
+                bucket[i].movies = obj.movies
                 return
         # Since it wasn't found we will add it to the hash map
-        bucket.append(MemberDetails(key, value))
+        bucket.append(obj)
 
     def get_val(self, key):
         # This will be the same as the set_val regarding searching
@@ -48,4 +45,5 @@ class HashTable:
             if item.name == key:
                 return item.movies
         return f"{key} not in the hash map\n"
+
 

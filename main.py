@@ -1,5 +1,5 @@
 import requests
-import myhashmap
+from myhashmap import HashTable, MemberDetails
 
 API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
 
@@ -37,7 +37,6 @@ def get_user_movie(name):
     response = requests.get(endpoint, params)
     if response.status_code == 200:
         return response.json()
-        find_details(j_res['results'][0]['id'])
     else:
         print("ERROR")
         return None
@@ -106,6 +105,13 @@ if __name__ == '__main__':
                   f"Department: {crew_dets['department']}; Job: {crew_dets['job']}")
 
 
-    # By getting only the director and the screenwriter, we can begin to do search and comparison of movies
-    
+    # Testing the hash map class along with the cast member class
+    myMap = HashTable(50)
+    myObj = MemberDetails("Cody Zack", ["suite life", "riverdale"])
+    myMap.set_val(myObj)
+    currList = myMap.get_val("Cody Zack")
+    for i in currList:
+        print(i)
+
+
 

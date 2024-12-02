@@ -1,3 +1,5 @@
+from castmember import MemberDetails
+
 # class to implement node of RB Tree
 class RBNode:
         # constructor
