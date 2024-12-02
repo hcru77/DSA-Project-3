@@ -1,5 +1,6 @@
 import requests
 from myhashmap import HashTable, MemberDetails
+from redblacktree import RedBlackTree, RBNode
 
 API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
 
@@ -110,8 +111,19 @@ if __name__ == '__main__':
     myObj = MemberDetails("Cody Zack", ["suite life", "riverdale"])
     myMap.set_val(myObj)
     currList = myMap.get_val("Cody Zack")
-    for i in currList:
+    # for i in currList:
+    #     print(i)
+
+    tree = RedBlackTree()
+    tree.insert(myObj)
+
+    currArr = tree.search("Cody Zack")
+    for i in currArr:
         print(i)
+
+
+
+
 
 
 

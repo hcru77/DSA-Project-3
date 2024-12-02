@@ -1,8 +1,9 @@
 from castmember import MemberDetails
 
+
 # class to implement node of RB Tree
 class RBNode:
-        # constructor
+    # constructor
     def __init__(self, value, color='red'):
         self.value = value
         self.color = color
@@ -30,11 +31,12 @@ class RBNode:
             return None
         return self.parent.sibling()
 
+
 # function to implement Red Black Tree
 
 
 class RedBlackTree:
-        # constructor to initialize the RB tree
+    # constructor to initialize the RB tree
     def __init__(self):
         self.root = None
 
@@ -43,7 +45,7 @@ class RedBlackTree:
         curr_node = self.root
         while curr_node is not None:
             if value == curr_node.value:
-                return curr_node
+                return curr_node.value.movies
             elif value < curr_node.value:
                 curr_node = curr_node.left
             else:
@@ -107,3 +109,43 @@ class RedBlackTree:
                     new_node.grandparent().color = 'red'
                     self.rotate_left(new_node.grandparent())
         self.root.color = 'black'
+
+    def rotate_left(self, node):
+        # left rotation for RB tree
+        right_child = node.right
+        node.right = right_child.left
+
+        if right_child.left is not None:
+            right_child.left.parent = node
+
+        right_child.parent = node.parent
+
+        if node.parent is None:
+            self.root = right_child
+        elif node == node.parent.left:
+            node.parent.left = right_child
+        else:
+            node.parent.right = right_child
+
+        right_child.left = node
+        node.parent = right_child
+
+    # function for right rotation of RB Tree
+    def rotate_right(self, node):
+        left_child = node.left
+        node.left = left_child.right
+
+        if left_child.right is not None:
+            left_child.right.parent = node
+
+        left_child.parent = node.parent
+
+        if node.parent is None:
+            self.root = left_child
+        elif node == node.parent.right:
+            node.parent.right = left_child
+        else:
+            node.parent.left = left_child
+
+        left_child.right = node
+        node.parent = left_child

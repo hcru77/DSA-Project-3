@@ -6,8 +6,8 @@ class MemberDetails:
 
     def __eq__(self, other):
         # checks if names are equal
-        return self.name == other.name
+        return self.name == other
 
     def __lt__(self, other):
         # checks if name is less than other name lexicographically
-        return self.name < other.name
+        return self.name < other
