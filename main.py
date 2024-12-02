@@ -1,4 +1,5 @@
 import requests
+import myhashmap
 
 API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
 
@@ -103,6 +104,7 @@ if __name__ == '__main__':
         if crew_dets['job'] == "Director" or crew_dets['job'] == "Screenplay":
             print(f"Name: {crew_dets['name']}; Known For: {crew_dets['known_for_department']}; "
                   f"Department: {crew_dets['department']}; Job: {crew_dets['job']}")
+
 
     # By getting only the director and the screenwriter, we can begin to do search and comparison of movies
     

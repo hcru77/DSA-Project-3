@@ -4,6 +4,14 @@ def hash_key(key):
         new_num += ord(letter) * (31**i)
     return new_num
 
+class MemberDetails:
+    def __init__(self, name, movies):
+        # Name is a basic string and the movies is going to be an array of strings
+        self.name = name
+        self.movies = movies
+
+# I read how to create hash map from geeks for geeks article, so the create_buckets, get, and set functions are all
+# inspired by the article: https://www.geeksforgeeks.org/hash-map-in-python/
 class HashTable:
     def __init__(self, size):
         # Initializing hash map by getting size and making proper amount of buckets
@@ -23,12 +31,12 @@ class HashTable:
 
         # Loop through the items in the bucket to check if the key is already in bucket
         for i, item in enumerate(bucket):
-            if item[0] == key:
+            if item.name == key:
                 # We will replace the value of the key
-                bucket[i] = (key, value)
+                bucket[i].movies = value
                 return
         # Since it wasn't found we will add it to the hash map
-        bucket.append((key, value))
+        bucket.append(MemberDetails(key, value))
 
     def get_val(self, key):
         # This will be the same as the set_val regarding searching
@@ -37,7 +45,7 @@ class HashTable:
         bucket = self.hash_table[hashed_key]
         for i, item in enumerate(bucket):
             # If we found item then just return else we will print that it wasn't found
-            if item[0] == key:
-                return item[1]
+            if item.name == key:
+                return item.movies
         return f"{key} not in the hash map\n"
 
