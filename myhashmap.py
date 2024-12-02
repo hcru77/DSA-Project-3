@@ -1,5 +1,6 @@
 from castmember import MemberDetails
 
+# Hashing function
 def hash_key(key):
     new_num = 0
     for i, letter in enumerate(key):
