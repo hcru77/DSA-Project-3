@@ -11,3 +11,5 @@ class MemberDetails:
     def __lt__(self, other):
         # checks if name is less than other name lexicographically
         return self.name < other
+
+
