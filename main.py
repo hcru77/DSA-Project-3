@@ -29,7 +29,7 @@ def get_popular_movies():
         return None
 
 # We will get the id for the movie that we want to search up
-def get_user_movie(name):
+def search_movie(name):
     endpoint = f"{BASE_URL}/search/movie?include_adult=false&language=en-US&page=1"
     params = {
         "api_key": API_KEY,
@@ -42,9 +42,36 @@ def get_user_movie(name):
         print("ERROR")
         return None
 
+# Get some more details on a particular cast member
+def search_by_name(name):
+    endpoint = f"{BASE_URL}/search/person?include_adult=false&language=en-US&page=1"
+    params = {
+        "api_key": API_KEY,
+        "query": name
+    }
+    response = requests.get(endpoint, params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("ERROR")
+        return None
+
 # Involved with finding the actual details of the movie
-def find_details(id):
+def find_movie_details(id):
     endpoint = f"{BASE_URL}/movie/{id}?language=en-US"
+    params = {
+        "api_key": API_KEY
+    }
+    response = requests.get(endpoint, params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("ERROR")
+        return None
+
+# Get the details for each of the people
+def find_member_details(id):
+    endpoint = f"{BASE_URL}/person/{id}?language=en-US"
     params = {
         "api_key": API_KEY
     }
@@ -68,12 +95,10 @@ def get_credits(id):
         print("ERROR")
         return None
 
-# Get some more details on a particular cast member
-def search_by_name(name):
-    endpoint = f"{BASE_URL}/search/person?include_adult=false&language=en-US&page=1"
+def fetch_movie_credits(id):
+    endpoint = f"{BASE_URL}/person/{id}/movie_credits?"
     params = {
-        "api_key": API_KEY,
-        "query": name
+        "api_key": API_KEY
     }
     response = requests.get(endpoint, params)
     if response.status_code == 200:
@@ -84,46 +109,62 @@ def search_by_name(name):
 
 if __name__ == '__main__':
 
+    """
+    *
+    *
+    Using the API calls we will get the necessary data for the movie
+    *
+    *
+    """
     #Get the user input
     user_inp = input("Pick a random movie: ")
-    user_mov = get_user_movie(user_inp)
+    user_mov = search_movie(user_inp) # Searches the movie from its name to get the id
     mov_id = user_mov['results'][0]['id']
 
-    mov_details = find_details(mov_id)
-    mov_cast = get_credits(mov_id)
+    mov_details = find_movie_details(mov_id) # Gets the details once we are given the movie id
+    mov_cast = get_credits(mov_id) # Gets the credits details once we are given the movie id
 
-    # Getting all the credits and their respective characters
-    for credit_dets in mov_cast['cast']:
-        if "(uncredited)" not in credit_dets['character']:
-            print(f"Actor Name: {credit_dets['name']}; Character: {credit_dets['character']}")
 
-    print()
 
-    # Obtaining the details of the crew and their jobs
+    # Get a list of the names of the top 10 actors that are involved in each movie
+    crew_list = []
+    for i, credit_dets in enumerate(mov_cast['cast']):
+        if i == 10:
+            break
+        crew_list.append(credit_dets['name'])
+
+    # Appending the directors and screenwriters to the crew list
     for crew_dets in mov_cast['crew']:
         if crew_dets['job'] == "Director" or crew_dets['job'] == "Screenplay":
-            print(f"Name: {crew_dets['name']}; Known For: {crew_dets['known_for_department']}; "
-                  f"Department: {crew_dets['department']}; Job: {crew_dets['job']}")
+            crew_list.append(crew_dets['name'])
 
+    # Create the list that includes all instances of the MemberDetails class
+    people_list = []
+    # Crew list includes the names of the actors and crew involved
+    for person in crew_list:
+        # Initialize the list that will store all the movies that a particular person has been in
+        movie_list = []
+        # Grabbing the id information and then fetching the movies that a particular person has worked in
+        id_info = search_by_name(person)
+        person_id = id_info['results'][0]['id']
+        person_movies = fetch_movie_credits(person_id)
+        # Loop through the movie titles and store them into the movie_list
+        #
+        #
+        # NOTE FOR LATER: WE CAN DIRECTLY STORE THEM INTO THE DATA STRUCTURES HERE RATHER THAN IN A LATER STEP
+        #
+        #
+        for movie in person_movies['cast']:
+            movie_list.append(movie['title'])
+        people_list.append(MemberDetails(person, movie_list))
 
-    # Testing the hash map class along with the cast member class
-    myMap = HashTable(50)
-    myObj = MemberDetails("Cody Zack", ["suite life", "riverdale"])
-    myMap.set_val(myObj)
-    currList = myMap.get_val("Cody Zack")
-    # for i in currList:
-    #     print(i)
-
-    tree = RedBlackTree()
-    tree.insert(myObj)
-    other_obj = MemberDetails("leonardo dicaprio", ["shutter island", "titanic", "wolf of wall street"])
-    tree.insert(other_obj)
-    tree.insert(MemberDetails("tom cruise", ["top gun", "mission impossible"]))
-
-    currArr = tree.search("tom cruise")
-
-    for i in currArr:
-        print(i)
+    """
+    *
+    *
+    Begin initializing the data structures and storing the people objects
+    *
+    *
+    """
 
 
 
