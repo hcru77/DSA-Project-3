@@ -116,8 +116,12 @@ if __name__ == '__main__':
 
     tree = RedBlackTree()
     tree.insert(myObj)
+    other_obj = MemberDetails("leonardo dicaprio", ["shutter island", "titanic", "wolf of wall street"])
+    tree.insert(other_obj)
+    tree.insert(MemberDetails("tom cruise", ["top gun", "mission impossible"]))
 
-    currArr = tree.search("Cody Zack")
+    currArr = tree.search("tom cruise")
+
     for i in currArr:
         print(i)
 

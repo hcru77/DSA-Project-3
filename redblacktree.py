@@ -44,9 +44,9 @@ class RedBlackTree:
     def search(self, value):
         curr_node = self.root
         while curr_node is not None:
-            if value == curr_node.value:
+            if value == curr_node.value.name:
                 return curr_node.value.movies
-            elif value < curr_node.value:
+            elif value < curr_node.value.name:
                 curr_node = curr_node.left
             else:
                 curr_node = curr_node.right
@@ -61,7 +61,7 @@ class RedBlackTree:
         else:
             curr_node = self.root
             while True:
-                if value < curr_node.value:
+                if value < curr_node.value.name:
                     if curr_node.left is None:
                         curr_node.left = new_node
                         new_node.parent = curr_node
