@@ -47,4 +47,15 @@ class HashTable:
                 return item.movies
         return f"{key} not in the hash map\n"
 
+    def in_map(self, key):
+        # This will be the same as the set_val regarding searching
+        hashed_key = hash_key(key) % self.size
+
+        bucket = self.hash_table[hashed_key]
+        for i, item in enumerate(bucket):
+            # If we found item then just return else we will print that it wasn't found
+            if item.name == key:
+                return True
+        return False
+
 
