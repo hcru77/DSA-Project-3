@@ -1,6 +1,7 @@
 import requests
 from myhashmap import HashTable, MemberDetails
 from redblacktree import RedBlackTree, RBNode
+import time
 
 API_KEY = "ac2e9683866ec54f39f1b50d1634f4e5"
 
@@ -16,6 +17,7 @@ These are going to be all of the functions necessary to make all of the API call
 *
 '''
 
+
 def get_popular_movies():
     endpoint = f"{BASE_URL}/movie/popular?language=en-US&page=1"
     params = {
@@ -27,6 +29,7 @@ def get_popular_movies():
     else:
         print("ERROR")
         return None
+
 
 # We will get the id for the movie that we want to search up
 def search_movie(name):
@@ -42,6 +45,7 @@ def search_movie(name):
         print("ERROR")
         return None
 
+
 # Get some more details on a particular cast member
 def search_by_name(name):
     endpoint = f"{BASE_URL}/search/person?include_adult=false&language=en-US&page=1"
@@ -56,6 +60,7 @@ def search_by_name(name):
         print("ERROR")
         return None
 
+
 # Involved with finding the actual details of the movie
 def find_movie_details(id):
     endpoint = f"{BASE_URL}/movie/{id}?language=en-US"
@@ -68,6 +73,7 @@ def find_movie_details(id):
     else:
         print("ERROR")
         return None
+
 
 # Get the details for each of the people
 def find_member_details(id):
@@ -82,6 +88,7 @@ def find_member_details(id):
         print("ERROR")
         return None
 
+
 # Will find credits for a given movie
 def get_credits(id):
     endpoint = f"{BASE_URL}/movie/{id}/credits?language=en-US"
@@ -95,6 +102,7 @@ def get_credits(id):
         print("ERROR")
         return None
 
+
 def fetch_movie_credits(id):
     endpoint = f"{BASE_URL}/person/{id}/movie_credits?"
     params = {
@@ -107,6 +115,7 @@ def fetch_movie_credits(id):
         print("ERROR")
         return None
 
+
 if __name__ == '__main__':
 
     """
@@ -116,15 +125,20 @@ if __name__ == '__main__':
     *
     *
     """
-    #Get the user input
+    # initialize red-black tree and hash table
+    tree = RedBlackTree()
+    hash_map = HashTable(100)
+
+    # bool to choose whether to use hash table/tree
+    isTree = True
+
+    # Get the user input
     user_inp = input("Pick a random movie: ")
-    user_mov = search_movie(user_inp) # Searches the movie from its name to get the id
+    user_mov = search_movie(user_inp)  # Searches the movie from its name to get the id
     mov_id = user_mov['results'][0]['id']
 
-    mov_details = find_movie_details(mov_id) # Gets the details once we are given the movie id
-    mov_cast = get_credits(mov_id) # Gets the credits details once we are given the movie id
-
-
+    mov_details = find_movie_details(mov_id)  # Gets the details once we are given the movie id
+    mov_cast = get_credits(mov_id)  # Gets the credits details once we are given the movie id
 
     # Get a list of the names of the top 10 actors that are involved in each movie
     crew_list = []
@@ -140,7 +154,11 @@ if __name__ == '__main__':
 
     # Create the list that includes all instances of the MemberDetails class
     people_list = []
+
+    # start the timer for insertion into tree
+    start_time = time.time()
     # Crew list includes the names of the actors and crew involved
+
     for person in crew_list:
         # Initialize the list that will store all the movies that a particular person has been in
         movie_list = []
@@ -158,6 +176,18 @@ if __name__ == '__main__':
             movie_list.append(movie['title'])
         people_list.append(MemberDetails(person, movie_list))
 
+        # inserts into either tree or hash map
+        if isTree:
+            tree.insert(MemberDetails(person, movie_list))
+        else:
+            hash_map.set_val(MemberDetails(person, movie_list))
+
+    # end timer and print result
+    end_time = time.time()
+    print(f"Inserting into tree/map took {end_time - start_time:.2f} seconds")
+
+    tree.inorder_traversal(tree.root)
+
     """
     *
     *
@@ -165,11 +195,3 @@ if __name__ == '__main__':
     *
     *
     """
-
-
-
-
-
-
-
-

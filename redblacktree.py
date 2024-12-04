@@ -150,3 +150,8 @@ class RedBlackTree:
         left_child.right = node
         node.parent = left_child
 
+    def inorder_traversal(self, node):
+        if node is not None:
+            self.inorder_traversal(node.left)
+            print(f'Actor: {node.value.name}, Movies: {node.value.movies} ')
+            self.inorder_traversal(node.right)
