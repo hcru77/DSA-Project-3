@@ -275,6 +275,7 @@ def director_recommend(director, movie_name, movie_collection_name):
     movies_response.raise_for_status()
     movies_data = movies_response.json()
 
+    # adds movie that the user inputted and its collection to a set and makes sure to exclude it in recommendation
     excluded_movies = set(movie_collection_name)
     excluded_movies.add(movie_name)
     directed_movies = [
