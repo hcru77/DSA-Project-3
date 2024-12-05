@@ -1,0 +1,1 @@
+To run the program, enter the name of any movie (not case sensitive). The terminal will then print out a list of recommended movies based on shared actors, and other movies made by the same director/screenwriter
