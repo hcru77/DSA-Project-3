@@ -18,6 +18,7 @@ These are going to be all of the functions necessary to make all of the API call
 *
 '''
 
+
 def get_popular_movies():
     endpoint = f"{BASE_URL}/movie/popular?language=en-US&page=1"
     params = {
@@ -115,6 +116,7 @@ def fetch_movie_credits(id):
         print("ERROR")
         return None
 
+
 # Find the movies that a director has directed
 def fetch_movie_director(id):
     endpoint = f"{BASE_URL}/person/{id}/movie_credits?"
@@ -124,11 +126,12 @@ def fetch_movie_director(id):
     response = requests.get(endpoint, params)
     if response.status_code == 200:
         full_response = response.json()
-        return [movie['title'] for movie in full_response.get('crew',[])
+        return [movie['title'] for movie in full_response.get('crew', [])
                 if movie.get('job') == "Director"]
     else:
         print("ERROR")
         return None
+
 
 # Find the movies that a writer has written
 def fetch_movie_screenwriter(id):
@@ -145,6 +148,7 @@ def fetch_movie_screenwriter(id):
         print("ERROR")
         return None
 
+
 def fetch_collection_details(id):
     endpoint = f"{BASE_URL}/collection/{id}?"
     params = {
@@ -157,6 +161,7 @@ def fetch_collection_details(id):
         print("ERROR")
         return None
 
+
 """
 *
 *
@@ -166,6 +171,7 @@ The recommendation algorithms
 *
 *
 """
+
 
 # We will make the recommendation but the search will be performed on the hash map
 def actor_recommend_map(hash_m, obj_list, related_movs):
@@ -202,7 +208,6 @@ def actor_recommend_map(hash_m, obj_list, related_movs):
                         common_movies[movie_name] += 1
 
     return common_movies
-
 
 
 # We will make the recommendations searching the tree
@@ -255,7 +260,7 @@ def get_movie_collection(mov_id):
 
 
 # Simpler recommendation based on the directors movies and similarities to the current movie
-def director_recommend(director):
+def director_recommend(director, movie_name, movie_collection_name):
     # takes in director(string) and gives list of 10 most popular movies
 
     search_results = search_by_name(director)
@@ -270,10 +275,12 @@ def director_recommend(director):
     movies_response.raise_for_status()
     movies_data = movies_response.json()
 
+    excluded_movies = set(movie_collection_name)
+    excluded_movies.add(movie_name)
     directed_movies = [
         {"title": movie["title"], "popularity": movie["popularity"]}
         for movie in movies_data.get("crew", [])
-        if movie["job"] == "Director"
+        if movie["job"] == "Director" and movie["title"] not in excluded_movies
     ]
 
     recommended_movies = sorted(directed_movies, key=lambda x: x["popularity"], reverse=True)
@@ -281,7 +288,7 @@ def director_recommend(director):
 
 
 # Will give recommendation based on the screenwriter and the genres of the current movie
-def screenwriter_recommend(screenwriter):
+def screenwriter_recommend(screenwriter, movie_name, movie_collection_name):
     search_results = search_by_name(screenwriter)
     if not search_results or not search_results.get("results"):
         return f"No director found with the name '{screenwriter}'."
@@ -296,10 +303,12 @@ def screenwriter_recommend(screenwriter):
 
     directed_movies = [
         {"title": movie["title"], "popularity": movie["popularity"]}
-        for movie in movies_data.get("crew", [])
-        if movie["job"] == "Screenplay"
+        for movie in movies_data.get("crew", []) if
+        movie["job"] == "Screenplay" and not movie_name and not movie_collection_name
     ]
 
+    excluded_movies = set(movie_collection_name)
+    excluded_movies.add(movie_name)
     recommended_movies = sorted(directed_movies, key=lambda x: x["popularity"], reverse=True)
     return recommended_movies[:3]
 
@@ -325,7 +334,6 @@ if __name__ == '__main__':
 
     # Get the collection of movies that are related to the user movie
     movie_collection = get_movie_collection(mov_id)
-
 
     mov_details = find_movie_details(mov_id)  # Gets the details once we are given the movie id
     mov_cast = get_credits(mov_id)  # Gets the credits details once we are given the movie id
@@ -436,9 +444,8 @@ if __name__ == '__main__':
     # Result lists for the actor , director, screenwriter, and collection recommendations
     recom_actors = []
 
-
     # Sort the map so that it is going in descending order
-    common_movies_map = dict(sorted(common_movies_map.items(), key=lambda x:x[1], reverse=True))
+    common_movies_map = dict(sorted(common_movies_map.items(), key=lambda x: x[1], reverse=True))
     # Looping through the common movies and going to extract the movie with most common actors
     for i, key in enumerate(common_movies_map):
         if i == 3:
@@ -451,20 +458,15 @@ if __name__ == '__main__':
     screenw_seen = False
     movie_list = []
 
-
     for key in crew_list:
         if crew_list[key] == "Director" and director_seen == False:
-            movie_pairs = director_recommend(key)
+            movie_pairs = director_recommend(key, user_inp, movie_collection)
             for movie in movie_pairs:
                 movie_list.append(movie["title"])
             director_seen = True
         elif not screenw_seen:
-            movie_pairs = screenwriter_recommend(key)
+            movie_pairs = screenwriter_recommend(key, user_inp, movie_collection)
             for movie in movie_pairs:
                 movie_list.append(movie["title"])
             screenw_seen = True
     print(movie_list)
-
-
-
-
