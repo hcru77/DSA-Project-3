@@ -255,18 +255,53 @@ def get_movie_collection(mov_id):
 
 
 # Simpler recommendation based on the directors movies and similarities to the current movie
-# Directors most of the time have similar styles, so maybe if you like the directors style, we will pick on their
-# movies. Example: Any Tarantino movie
-def director_recommend():
-    pass
+def director_recommend(director):
+    # takes in director(string) and gives list of 10 most popular movies
+
+    search_results = search_by_name(director)
+    if not search_results or not search_results.get("results"):
+        return f"No director found with the name '{director}'."
+
+    director_id = search_results["results"][0]["id"]
+
+    movies_url = f"{BASE_URL}/person/{director_id}/movie_credits"
+    movies_params = {"api_key": API_KEY}
+    movies_response = requests.get(movies_url, params=movies_params)
+    movies_response.raise_for_status()
+    movies_data = movies_response.json()
+
+    directed_movies = [
+        {"title": movie["title"], "popularity": movie["popularity"]}
+        for movie in movies_data.get("crew", [])
+        if movie["job"] == "Director"
+    ]
+
+    recommended_movies = sorted(directed_movies, key=lambda x: x["popularity"], reverse=True)
+    return recommended_movies[:3]
+
 
 # Will give recommendation based on the screenwriter and the genres of the current movie
-# Example: The Social Network was screenwritten by Aaron Sorkin and another famous movie of his Money Ball
-# was also a well received a drama, therefore, we can recommend it because although it is not technology
-# it will be a similarly written and is also a drama
-def screenwriter_recommend():
-    pass
+def screenwriter_recommend(screenwriter):
+    search_results = search_by_name(screenwriter)
+    if not search_results or not search_results.get("results"):
+        return f"No director found with the name '{screenwriter}'."
 
+    screenwriter_id = search_results["results"][0]["id"]
+
+    movies_url = f"{BASE_URL}/person/{screenwriter_id}/movie_credits"
+    movies_params = {"api_key": API_KEY}
+    movies_response = requests.get(movies_url, params=movies_params)
+    movies_response.raise_for_status()
+    movies_data = movies_response.json()
+
+    directed_movies = [
+        {"title": movie["title"], "popularity": movie["popularity"]}
+        for movie in movies_data.get("crew", [])
+        if movie["job"] == "Screenplay"
+    ]
+
+    recommended_movies = sorted(directed_movies, key=lambda x: x["popularity"], reverse=True)
+    return recommended_movies[:3]
 
 
 if __name__ == '__main__':
@@ -397,18 +432,39 @@ if __name__ == '__main__':
     *
     *
     """
-    # Greatest frequency variable
-    maxx = 0
-    recom_res = []
+
+    # Result lists for the actor , director, screenwriter, and collection recommendations
+    recom_actors = []
+
 
     # Sort the map so that it is going in descending order
     common_movies_map = dict(sorted(common_movies_map.items(), key=lambda x:x[1], reverse=True))
-    print(common_movies_map)
     # Looping through the common movies and going to extract the movie with most common actors
     for i, key in enumerate(common_movies_map):
         if i == 3:
             break
-        recom_res.append(key)
+        recom_actors.append(key)
 
-    print(recom_res)
+    print(recom_actors)
+
+    director_seen = False
+    screenw_seen = False
+    movie_list = []
+
+
+    for key in crew_list:
+        if crew_list[key] == "Director" and director_seen == False:
+            movie_pairs = director_recommend(key)
+            for movie in movie_pairs:
+                movie_list.append(movie["title"])
+            director_seen = True
+        elif not screenw_seen:
+            movie_pairs = screenwriter_recommend(key)
+            for movie in movie_pairs:
+                movie_list.append(movie["title"])
+            screenw_seen = True
+    print(movie_list)
+
+
+
 
