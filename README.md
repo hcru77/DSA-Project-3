@@ -1,1 +1,2 @@
-To run the program, enter the name of any movie (not case sensitive). The terminal will then print out a list of recommended movies based on shared actors, and other movies made by the same director/screenwriter
+To run the program, enter the name of any movie (not case sensitive). The terminal will then print out a list of recommended movies based on shared actors, movies made by the same director/screenwriter, and the full series that a movie is involved with. 
+We will also analyze the performance of two different data structures with the search and comparison of actors when searching through the different movie possibilities.
